@@ -8,6 +8,8 @@ RFID tags used by QIDI's multi-color filament boxes, backed by
 This repository hosts only the built releases; there is no source code here
 and no installation is required.
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 ## Downloads
 
 Each release provides one executable per platform - grab yours from the
