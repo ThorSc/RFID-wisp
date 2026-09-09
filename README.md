@@ -77,3 +77,29 @@ standard = <PC/SC reader name>
    Spoolman spool or create a new one, choose material/manufacturer/color,
    place a blank tag on the reader, and write it to a sector (sector 1 by
    default, matching the QIDI box read location).
+
+## Klipper integration (`rfid_bridge`)
+
+To have your QIDI printer capture the raw RFID payload of each loaded spool
+during printing (so it can be correlated with the tag data written above),
+install [`rfid_bridge.py`](rfid_bridge.py) as a Klipper extra:
+
+1. Download [`rfid_bridge.py`](https://github.com/ThorSc/RFID-wisp/raw/main/rfid_bridge.py)
+   and copy it into Klipper's `klippy/extras/` directory on the printer.
+2. Add to `printer.cfg`:
+
+   ```ini
+   [rfid_bridge]
+   box_stepper_count: 4
+   ```
+
+3. Restart Klipper (`RESTART` or `FIRMWARE_RESTART`).
+
+It works by capturing the raw 16-byte `fm17550_read_card_return` response
+QIDI's own firmware already reads for each box slot - the same data the
+box uses internally - without modifying any QIDI-shipped file on disk. The
+patch is purely observational and is automatically undone by any Klipper
+restart.
+
+Query the captured data via `RFID_BRIDGE_STATUS` in the Klipper console, or
+`GET /printer/objects/query?rfid_bridge` through Moonraker.
