@@ -5,6 +5,20 @@ All notable changes to RFID Wisp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-09-12
+
+### Added
+
+- `rfid_bridge` now automatically reports the active spool to
+  Moonraker's built-in Spoolman integration (`/server/spoolman/spool_id`)
+  whenever the RFID data for the active box slot changes or a print job
+  starts, so Fluidd/Spoolman's active spool follows the box without
+  manual selection. Verified against a live Moonraker/Fluidd/Spoolman
+  stack.
+- Tooltips on every interactive control across the app (Spool/QIDI Data,
+  Settings, Actions, and the RFID tag read/write dialog) explaining
+  what each field and button does.
+
 ## [0.2.1] - 2026-09-09
 
 ### Added
@@ -36,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   during printing.
 - Automated Windows `.exe` release pipeline.
 
+[0.3.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.3.0
 [0.2.1]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.2.1
 [0.2.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.1.0
