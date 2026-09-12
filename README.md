@@ -1,5 +1,7 @@
 # RFID Wisp
 
+# Still in development - still features missing or not implemented
+
 A cross-platform desktop app for reading and writing the MIFARE Classic 1K
 RFID tags used by QIDI's multi-color filament boxes, backed by
 [Spoolman](https://github.com/Donkie/Spoolman) for spool/filament data and
@@ -20,6 +22,20 @@ Each release provides one executable per platform - grab yours from the
 | Windows  | `RFID-Wisp.exe`   | Run directly. |
 | Linux    | `RFID-Wisp-linux` | `chmod +x RFID-Wisp-linux` first. |
 | macOS    | `RFID-Wisp-macos` | `chmod +x RFID-Wisp-macos` first. |
+
+### Windows: blocked by Smart App Control?
+
+`RFID-Wisp.exe` isn't code-signed yet, so Windows 11's Smart App Control (and
+plain SmartScreen) may flag it on first run. Signing is planned, but until
+then:
+
+- If you see a SmartScreen prompt ("Windows protected your PC"), click
+  **More info → Run anyway**.
+- If Smart App Control blocks it outright (no "Run anyway" option shown),
+  the only workaround right now is turning Smart App Control off entirely:
+  **Windows Security → App & browser control → Smart App Control settings →
+  Off**. Note that this is one-way - once turned off, it can only be turned
+  back on via a clean Windows install/reset.
 
 ## Features
 
@@ -47,7 +63,8 @@ Each release provides one executable per platform - grab yours from the
     `sudo systemctl enable --now pcscd`), plus your reader's CCID/ACS driver
     if it isn't already recognized by the generic CCID driver.
 - A reachable [Spoolman](https://github.com/Donkie/Spoolman) instance.
-- Optionally, a QIDI printer running Moonraker for live box/slot status.
+- A QIDI printer running Moonraker for live box/slot status (optional - the
+  app still works for reading/writing tags without it).
 
 ## Configuration
 
@@ -83,8 +100,9 @@ standard = <PC/SC reader name>
 ## Klipper integration (`rfid_bridge`)
 
 To have your QIDI printer capture the raw RFID payload of each loaded spool
-during printing (so it can be correlated with the tag data written above),
-install [`rfid_bridge.py`](rfid_bridge.py) as a Klipper extra:
+during printing (so it can be correlated with the tag data written above)
+and automatically keep Fluidd/Spoolman's active spool in sync, install
+[`rfid_bridge.py`](rfid_bridge.py) as a Klipper extra:
 
 1. Download [`rfid_bridge.py`](https://github.com/ThorSc/RFID-wisp/raw/main/rfid_bridge.py)
    and copy it into Klipper's `klippy/extras/` directory on the printer.
@@ -93,15 +111,39 @@ install [`rfid_bridge.py`](rfid_bridge.py) as a Klipper extra:
    ```ini
    [rfid_bridge]
    box_stepper_count: 4
+   moonraker_url: http://127.0.0.1:7125    # optional, shown default
+   moonraker_api_key:                      # optional, only needed if
+                                            # Moonraker requires auth for
+                                            # local requests
    ```
 
 3. Restart Klipper (`RESTART` or `FIRMWARE_RESTART`).
 
 It works by capturing the raw 16-byte `fm17550_read_card_return` response
 QIDI's own firmware already reads for each box slot - the same data the
-box uses internally - without modifying any QIDI-shipped file on disk. The
-patch is purely observational and is automatically undone by any Klipper
-restart.
+box uses internally - by monkey-patching `mcu.CommandQueryWrapper.send` in
+memory for the lifetime of the Klipper process, and by tracking the active
+`box_stepper slotN` via the public `stepper_enable` callback API. The
+patch is purely observational (it never changes QIDI's own
+request/response, and never modifies a QIDI-shipped file on disk) and is
+automatically undone by any Klipper `RESTART`/`FIRMWARE_RESTART`.
 
 Query the captured data via `RFID_BRIDGE_STATUS` in the Klipper console, or
 `GET /printer/objects/query?rfid_bridge` through Moonraker.
+
+### Automatic active-spool reporting to Moonraker/Spoolman
+
+`rfid_bridge` decodes the Spoolman spool number from the tag data (bytes
+14-15, big-endian - the same layout `FilamentSpool.to_tag_bytes()` writes)
+and POSTs it to Moonraker's built-in Spoolman integration
+(`/server/spoolman/spool_id`), so the active spool shown in Fluidd/Spoolman
+follows the box automatically - no manual selection needed. This requires
+the `[spoolman]` component to be configured in `moonraker.conf`.
+
+It reports whenever the decoded spool number for the currently active slot
+changes, and again whenever a print job starts (detected by polling
+`print_stats`, since Klipper has no dedicated print-start event). The HTTP
+call runs on a background thread via a queue so a slow or unreachable
+Moonraker never blocks the reactor; an unset/blank tag is reported as
+`spool_id: null`, clearing the active spool. Verified against a live
+Moonraker/Fluidd/Spoolman stack (Moonraker v0.8.0).
