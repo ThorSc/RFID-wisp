@@ -5,6 +5,32 @@ All notable changes to RFID Wisp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-09-16
+
+### Added
+
+- Write RFID Tag dialog: pick an existing Spoolman filament directly
+  (shown with its actual color) to prefill material, manufacturer,
+  color and weight, instead of setting each field by hand.
+- Initial weight / Remaining weight field: set the starting weight
+  when creating a new spool, or see the spool's current remaining
+  weight when writing an existing one.
+- New "Use Spoolman" setting: turn it off to read/write tags with only
+  the plain QIDI Box values, without a Spoolman server at all.
+- The app now checks GitHub once on startup for a newer release and
+  offers to open the download page - toggle it off in Settings if you
+  don't want that.
+- Writing a tag no longer closes the dialog, so a duplicate can be
+  written to a second or third physical tag right away with the same
+  values.
+
+### Fixed
+
+- Reading back a tag written for a spool with a linked Spoolman
+  manufacturer no longer fails, and the material/color it shows now
+  matches exactly what was written instead of being guessed from
+  Spoolman's data.
+
 ## [0.3.0] - 2026-09-12
 
 ### Added
@@ -50,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   during printing.
 - Automated Windows `.exe` release pipeline.
 
+[0.4.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.4.0
 [0.3.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.3.0
 [0.2.1]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.2.1
 [0.2.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.2.0
