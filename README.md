@@ -1,6 +1,6 @@
 # RFID Wisp
 
-# Still in development - still features missing or not implemented
+# Still in development - some features are missing or not fully implemented
 
 A cross-platform desktop app for reading and writing the MIFARE Classic 1K
 RFID tags used by QIDI's multi-color filament boxes, backed by
@@ -45,13 +45,16 @@ then:
   are offered.
 - Reads and dumps the full 16-sector/64-block memory layout of a tag for
   inspection.
-- Writes filament metadata (material, color, manufacturer, spool number) to a
-  tag, either for a new Spoolman spool (created on the fly) or an existing
-  one picked from Spoolman.
+- Writes filament metadata (material, color, manufacturer, spool number,
+  weight) to a tag, either for a new Spoolman spool - pick the filament
+  directly from Spoolman to prefill everything, or set it up manually -
+  or an existing spool picked from Spoolman. Spoolman is optional: turn
+  it off in Settings to write plain QIDI-only tags without a server.
 - Shows the four material slots of one or more QIDI boxes live via Moonraker,
   including the last recorded remaining weight from Spoolman.
 - Manages multiple printers and a Spoolman server address from a settings
   panel, persisted to `config.ini`.
+- Checks GitHub for a newer release on startup (toggleable in Settings).
 
 ## Requirements
 
@@ -93,9 +96,11 @@ standard = <PC/SC reader name>
 4. The spool panel shows the loaded QIDI box(es) and their four material
    slots, refreshed from Moonraker.
 5. Click **Write Tag** to open the tag-writing dialog: pick an existing
-   Spoolman spool or create a new one, choose material/manufacturer/color,
+   Spoolman spool, or create a new one - optionally picking the filament
+   directly from Spoolman to prefill material/manufacturer/color/weight -
    place a blank tag on the reader, and write it to a sector (sector 1 by
-   default, matching the QIDI box read location).
+   default, matching the QIDI box read location). The dialog stays open
+   afterward so you can write another tag right away.
 
 ## Klipper integration (`rfid_bridge`)
 
