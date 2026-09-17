@@ -5,12 +5,34 @@ All notable changes to RFID Wisp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-09-17
+
+### Added
+
+- Generate a QR code for a spool's data (material, vendor, color, number)
+  from the Spoolman Data panel, and save it as a print-ready 20x20mm PDF.
+- QIDI Data now reads a slot's linked Spoolman spool number and vendor
+  straight from the box's RFID data, instead of requiring manual entry.
+- License information (`LICENSE`, `THIRD-PARTY-LICENSES.md`) for this
+  release and the open-source libraries it uses.
+
+### Changed
+
+- Renamed "Manufacturer" to "Vendor" throughout the app.
+- Cleaner, read-only QIDI Data fields that no longer look greyed-out or
+  editable.
+
+### Fixed
+
+- The app no longer shows an error reading QIDI Data while a print is
+  actively pulling filament from a slot.
+
 ## [0.4.0] - 2026-09-16
 
 ### Added
 
 - Write RFID Tag dialog: pick an existing Spoolman filament directly
-  (shown with its actual color) to prefill material, manufacturer,
+  (shown with its actual color) to prefill material, vendor,
   color and weight, instead of setting each field by hand.
 - Initial weight / Remaining weight field: set the starting weight
   when creating a new spool, or see the spool's current remaining
@@ -27,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Reading back a tag written for a spool with a linked Spoolman
-  manufacturer no longer fails, and the material/color it shows now
+  vendor no longer fails, and the material/color it shows now
   matches exactly what was written instead of being guessed from
   Spoolman's data.
 
@@ -57,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - RFID tag writer dialog: create a new Spoolman spool or pick an
-  existing one, then write its material/color/manufacturer/spool
+  existing one, then write its material/color/vendor/spool
   number to a tag.
 - Capability-based reader filtering: only readers proven to support
   MIFARE Classic 1K tags are offered, instead of relying on reader
@@ -76,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   during printing.
 - Automated Windows `.exe` release pipeline.
 
+[0.5.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.5.0
 [0.4.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.4.0
 [0.3.0]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.3.0
 [0.2.1]: https://github.com/ThorSc/RFID-wisp/releases/tag/v0.2.1
