@@ -21,7 +21,6 @@ Each release provides one executable per platform - grab yours from the
 |----------|------|-------|
 | Windows  | `RFID-Wisp.exe`   | Run directly. |
 | Linux    | `RFID-Wisp-linux` | `chmod +x RFID-Wisp-linux` first. |
-| macOS    | `RFID-Wisp-macos` | `chmod +x RFID-Wisp-macos` first. |
 
 ### Windows: blocked by Smart App Control?
 
@@ -58,7 +57,6 @@ then:
 - A PC/SC-compatible RFID reader (tested with the ACS ACR122), with its
   driver/PC/SC middleware installed:
   - **Windows** - PC/SC support (WinSCard) is built in.
-  - **macOS** - PC/SC support is built in.
   - **Linux** - install and run `pcscd` (e.g. `sudo apt install pcscd` /
     `sudo systemctl enable --now pcscd`), plus your reader's CCID/ACS driver
     if it isn't already recognized by the generic CCID driver.
@@ -147,6 +145,21 @@ call runs on a background thread via a queue so a slow or unreachable
 Moonraker never blocks the reactor; an unset/blank tag is reported as
 `spool_id: null`, clearing the active spool. Verified against a live
 Moonraker/Fluidd/Spoolman stack (Moonraker v0.8.0).
+
+The print-start report only has data to send if `rfid_bridge` has already
+captured a fresh RFID read for the active slot. Enable the QIDI BOX's own
+**"Check upon startup"** option (Filament page -> settings gear, in Fluidd
+or on the printer's touchscreen) so every loaded spool is re-read
+automatically on each printer/Klipper restart (takes about 1-2 minutes) -
+otherwise a spool whose tag was rewritten after the last box read can be
+missing from `last_raw` and gets silently skipped instead of reported. The
+same page has a manual **"Re read filament information"** button per slot
+for forcing a fresh read without a full restart (only while that slot's
+filament isn't fed through the box hub). Do not rely on a slicer-side
+`SET_ACTIVE_SPOOL` G-code call as a substitute or a "just in case" fallback:
+it runs later in the print than `rfid_bridge`'s own report and will silently
+overwrite the RFID-derived spool with whatever fixed ID is hardcoded in the
+filament profile.
 
 ## License
 
