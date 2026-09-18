@@ -5,6 +5,29 @@ All notable changes to RFID Wisp are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-09-18
+
+### Added
+
+- Splash screen while the app starts up; the main window appears once
+  reader detection, the printer check and the update check are done.
+- Spoolman filament picker entries now show the filament's weight.
+
+### Changed
+
+- The Settings panel now starts collapsed.
+
+### Fixed
+
+- Starting the app no longer makes non-RFID smart card devices (e.g. a
+  YubiKey) reset and trigger the Windows plug/unplug sound.
+
+### Removed
+
+- macOS is no longer supported; only Windows and Linux executables are
+  published from this release on. Earlier macOS downloads have been
+  removed from the releases page.
+
 ## [0.5.0] - 2026-09-17
 
 ### Added
